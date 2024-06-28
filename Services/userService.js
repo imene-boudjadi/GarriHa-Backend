@@ -22,8 +22,13 @@ async function login(
         if (user.motDePasse != motDePasse) {
             throw new Error("Mot de passe incorrect");
         }
-        // else retourner le user connecte
-        return { user };
+        // else retourner le user connecte sans le mot de passe 
+
+       // Destructure the user object to exclude the motDePasse
+       const { motDePasse: _, ...userWithoutPassword } = user;
+        // console.log("userr : ", userWithoutPassword);
+    return { user: userWithoutPassword };
+    // return { user };
     } catch (e) {
         throw e;
     } finally {
@@ -60,8 +65,10 @@ async function signup(
             [userId]
         );
         user = newUser[0];
-        // return user 
-        return { user };
+        // return user sans le mot de passe 
+        const { motDePasse: _, ...userWithoutPassword } = user;
+        // return { user };
+        return { user: userWithoutPassword };
     } catch (e) {
         throw e;
     } finally {
@@ -69,8 +76,50 @@ async function signup(
     }
 }
  
+
+/*************** SignUp Google****************/
+async function signupGoogle(
+    firstName,
+    lastName,
+    email,
+    NUmeroTel,
+    motDePasse,
+    PhotoUser
+    ){
+    const connection = await pool.getConnection();
+    try {
+        const [results] = await connection.query(
+        'SELECT * FROM users WHERE email = ?;',
+        [email]
+        );
+        console.log(email);
+        if (results.length != 0) {
+            return results[0];
+        }
+        const [insertResult] = await connection.query(
+            'INSERT INTO users (firstName, lastName, email, NUmeroTel, motDePasse, PhotoUser) VALUES (?, ?, ?, ?, ?, ?)',
+            [firstName, lastName, email, NUmeroTel, motDePasse, PhotoUser]
+        );
+        const userId = insertResult.insertId;
+        const [newUser] = await connection.query(
+            'SELECT * FROM users WHERE userId = ?',
+            [userId]
+        );
+        user = newUser[0];
+        // return user sans le mot de passe 
+        const { motDePasse: _, ...userWithoutPassword } = user;
+        // return { user };
+        return { user: userWithoutPassword };
+    } catch (e) {
+        throw e;
+    } finally {
+        connection.release();
+    }
+}
+
  
 module.exports = {
     login,   
     signup,    
+    signupGoogle
 };

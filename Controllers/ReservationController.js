@@ -7,14 +7,14 @@ const ReservationController = express.Router();
 /*************** Create Reservation *************/
 ReservationController.post("/createReservation", async (req, res, next) => {
     try {
-      const { reservation }= await ReservationService.createReservation(
-        req.body.DescriptionReservation,
+      const reservation = await ReservationService.createReservation(
         req.body.iduser,
         req.body.idparking,
-        req.body.dateDebut,
-        req.body.dateFin,
+        req.body.DateReservation,
+        req.body.HeureDebut,
+        req.body.HeureFin
       );
-      res.status(200).json({ reservation });
+      res.status(200).json(reservation);
       next();
     } catch (error) {
       console.error(error);
@@ -26,7 +26,7 @@ ReservationController.post("/createReservation", async (req, res, next) => {
 ReservationController.get("/allReservations", async (req, res, next) => {
   try {
       const reservations = await ReservationService.getAllReservations();
-      res.status(200).json({ reservations });
+      res.status(200).json(reservations);
   } catch (error) {
       console.error(error);
       res.status(500).send(error.message);
@@ -38,11 +38,24 @@ ReservationController.get("/getreservation/:reservationId", async (req, res, nex
   try {
       const { reservationId } = req.params;
       const reservation = await ReservationService.getReservationById(reservationId);
-      res.status(200).json({ reservation });
+      res.status(200).json(reservation);
   } catch (error) {
       console.error(error);
       res.status(500).send(error.message);
   }
 });
+
+/*************** Afficher les Reservations d'un user by id *************/
+ReservationController.get("/allUserReservations/:iduser", async (req, res, next) => {
+  try {
+      const { iduser } = req.params;
+      const reservations = await ReservationService.getReservationsUserById(iduser);
+      res.status(200).json(reservations);
+  } catch (error) {
+      console.error(error);
+      res.status(500).send(error.message);
+  }
+});
+
 
 module.exports = ReservationController;

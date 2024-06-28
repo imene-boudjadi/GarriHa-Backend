@@ -2,7 +2,7 @@ const pool = require('../database.js');
 
 
 /*************** Add Parking ****************/
-async function addParking(parkingName, AdresseParking, DescriptionParking, nombreDePlaces) {
+async function addParking(parkingName, CommuneParking, WilayaParking, AdresseParking, photoParking, nombreDePlaces, PrixParHeure, DescriptionParking, SurfaceParking, Latitude, Longitude) {
     const connection = await pool.getConnection();
     try {
         // le nom est unique
@@ -11,8 +11,8 @@ async function addParking(parkingName, AdresseParking, DescriptionParking, nombr
             throw new Error('parking exist deja');
         }
         const [insertResult] = await connection.query(
-            'INSERT INTO parkings (parkingName, AdresseParking, DescriptionParking, nombreDePlaces , nombreDePlacesReserve) VALUES (?, ?, ?, ? , ?)',
-            [parkingName, AdresseParking, DescriptionParking, nombreDePlaces, 0]
+            'INSERT INTO parkings (parkingName, CommuneParking, WilayaParking, AdresseParking, photoParking, nombreDePlaces, PrixParHeure, DescriptionParking, SurfaceParking, Latitude, Longitude) VALUES (?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?)',
+            [parkingName, CommuneParking, WilayaParking, AdresseParking, photoParking, nombreDePlaces, PrixParHeure, DescriptionParking, SurfaceParking, Latitude, Longitude]
         );
         const newParkingId = insertResult.insertId;
 
